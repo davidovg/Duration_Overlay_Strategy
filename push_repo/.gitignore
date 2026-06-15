@@ -1,0 +1,17 @@
+# Licensed market data — DO NOT COMMIT (Refinitiv/LSEG entitled data)
+outputs/
+*.csv
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.ipynb_checkpoints/
+.venv/
+venv/
+env/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
