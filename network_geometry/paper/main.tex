@@ -1,0 +1,116 @@
+\documentclass[12pt]{article}
+\usepackage[margin=1.1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{setspace}
+\usepackage{natbib}
+\usepackage[colorlinks=true,citecolor=blue,linkcolor=blue,urlcolor=blue]{hyperref}
+\usepackage{caption}
+\bibliographystyle{apalike}
+\onehalfspacing
+
+\title{The Geometry and Topology of Duration:\\
+A Network- and Gravity-Radius-Based Overlay Strategy\\
+for Bund Futures\thanks{Draft prepared for submission to \emph{The Journal of Fixed Income}. All errors are our own.}}
+\author{Boyan Davidov\thanks{Contact: davidovboyan@gmail.com}}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent We propose a systematic duration overlay for German Bund futures that combines two strands of recent quantitative research: the geometric representation of currency volatilities introduced by \citet{konstantinov2022geometry}, and the network-theoretic view of cross-asset risk transmission developed in \citet{konstantinov2023networks}, \citet{konstantinov2025networkmodels}, and \citet{konstantinov2025unsupervised}. From daily volatilities and correlations of euro currency crosses we construct an aggregate \emph{gravity-radius} factor---the centroid distance of rotating volatility triangles under the Guldin--Pappus theorem---which behaves as a forward-looking turbulence gauge for the euro area. In parallel, we estimate rolling correlation networks across global rates, foreign exchange, and volatility nodes, and extract the Bund's eigenvector centrality and overall network density as regime indicators. Conditioning conventional momentum and carry signals on these geometric and topological states materially improves risk-adjusted returns of a weekly-rebalanced Bund futures overlay over 2007--2026. [Results to be finalized.] The framework links the geometry of volatility space and the topology of asset networks to implementable fixed-income portfolio decisions.
+\end{abstract}
+
+\vspace{0.5em}
+\noindent\textbf{Keywords:} duration management, Bund futures, network theory, eigenvector centrality, currency volatility, turbulence, Guldin--Pappus theorem.
+
+\section{Introduction}\label{sec:intro}
+
+Duration timing is the central active decision in government bond portfolio management, yet most systematic implementations rest on a narrow signal set---momentum, carry, and value---estimated in isolation from the broader cross-asset environment \citep{konstantinov2023qgbpm}. Two recent research programs suggest that the \emph{structure} of market co-movements carries incremental information. First, \citet{konstantinov2022geometry} show that the joint behavior of currency volatilities and correlations can be summarized geometrically: each currency pair defines a triangle in volatility space, and the distance of its centroid from the origin---the \emph{gravity radius} obtained via the Guldin--Pappus theorem---aggregates into an index that behaves like a turbulence measure and correlates moderately with implied equity volatility. Second, a growing literature models financial markets as networks \citep{diebold2015connectedness, konstantinov2023networks, konstantinov2025networkmodels}, in which centrality measures identify the assets through which systemic risk flows, and global network statistics such as density map into regime identification \citep{konstantinov2025unsupervised, konstantinov2020network}.
+
+This paper brings both programs to bear on a single, highly liquid instrument: the Euro-Bund future (FGBL). Our contribution is threefold. First, we construct a euro-centric gravity-radius factor from eight EUR crosses and document its properties as a flight-to-quality indicator for German duration. Second, we estimate weekly cross-asset correlation networks spanning global 10-year rates, EUR crosses, and volatility indices, and show that the Bund's eigenvector centrality and the network's edge density define economically meaningful regimes for duration returns. Third, we embed both state variables in a weekly duration overlay and quantify their incremental value over momentum and carry baselines, net of transaction costs, over a sample spanning the global financial crisis, the euro sovereign crisis, the 2015 Bund tantrum, the 2022 hiking cycle, and the 2024--2026 normalization.
+
+[INTRO TO BE COMPLETED AFTER RESULTS]
+
+\section{Related Literature}\label{sec:lit}
+
+Our work builds directly on the research agenda of Konstantinov and co-authors. \citet{konstantinov2022geometry} introduce the geometric representation of currency volatilities and the gravity-radius factor. \citet{konstantinov2023networks} provide a comprehensive treatment of financial networks in portfolio management; \citet{konstantinov2025networkmodels} extend the toolkit in book-length form, and \citet{konstantinov2025unsupervised} survey network theory as unsupervised learning for asset management, including centrality-based allocation and network-density regime signals. \citet{konstantinov2020network} apply networks and machine learning to factor and asset allocation, and \citet{konstantinov2022embonds} studies currency impact in bond portfolios. On the fixed-income side, \citet{konstantinov2023qgbpm} develop quantitative global bond portfolio management, including duration timing.
+
+The mathematical foundations of our state variables predate their financial application by decades. The random-graph program of \citet{erdos1960evolution}, made rigorous and systematic by \citet{bollobas2001random}, established the sharp connectivity thresholds at which a graph abruptly forms a giant connected component once its average degree crosses unity; this phase transition is precisely the phenomenon that makes network \emph{density} informative as a regime variable, as \citet{konstantinov2025unsupervised} note when they observe that a market network ``begins to form a connected component'' beyond a critical average degree. Spectral notions such as eigenvector centrality rest on the algebraic graph theory expounded in \citet{bollobas1998modern}, and standard definitions and matrix representations follow \citet{gross2019graph}. Even the scale-free degree distributions frequently invoked for financial networks were first \emph{proved}---rather than simulated---by \citet{bollobas2001scalefree} for the preferential-attachment model. We make this lineage explicit because our empirical design trades directly on it: the density signal exploits a random-graph phase transition, and the centrality signal exploits spectral structure.
+
+The turbulence literature begins with \citet{chow1999optimal} and \citet{kritzman2010skulls}, who define turbulence via the Mahalanobis distance of returns. The gravity radius differs in construction and information content: it is built from volatilities and correlations directly (not returns), reacts to \emph{joint} vol-and-correlation shifts, and---as we show---has different dynamics from Mahalanobis turbulence in currency space. Network approaches to systemic risk measurement trace to \citet{billio2012econometric} and \citet{diebold2015connectedness}; portfolio applications include \citet{peralta2016network}, \citet{zareei2019network}, \citet{raffinot2018hierarchical}, and \citet{ciciretti2024network}. Duration timing and bond risk premia are surveyed in \citet{ilmanen2011expected}; time-series momentum in futures is documented by \citet{moskowitz2012time}, and carry across asset classes by \citet{koijen2018carry}.
+
+[LIT REVIEW TO BE EXPANDED]
+
+\section{Methodology}\label{sec:method}
+
+\subsection{The Gravity-Radius Factor}\label{sec:gravity}
+
+Following \citet{konstantinov2022geometry}, consider two currencies $i$ and $j$ measured against a common base (here the euro), with annualized volatilities $\sigma_i$ and $\sigma_j$ and return correlation $\rho_{ij}$. The two volatility vectors span an angle $\theta_{ij}$ with $\cos\theta_{ij}=\rho_{ij}$, and the volatility of the cross rate follows the law of cosines:
+\begin{equation}
+\sigma_{ij}^2 \;=\; \sigma_i^2 + \sigma_j^2 - 2\rho_{ij}\,\sigma_i\sigma_j .
+\label{eq:cosines}
+\end{equation}
+Each pair therefore defines a triangle in Euclidean volatility space with vertices at the origin, $P_i=(\sigma_i,0)$, and $P_j=(\sigma_j\cos\theta_{ij}, \sigma_j\sin\theta_{ij})$. The Guldin--Pappus theorem states that the volume generated by rotating a plane figure about an external axis equals the product of its area and the circumference traveled by its centroid, $V = 2\pi R_g A$, so the \emph{gravity radius} $R_g$---the distance of the centroid from the axis of rotation through the base-currency origin---summarizes the figure's position in volatility space. For the triangle above, the centroid is
+\begin{equation}
+C_{ij} = \tfrac{1}{3}\left(\sigma_i + \sigma_j\rho_{ij},\; \sigma_j\sqrt{1-\rho_{ij}^2}\right),
+\end{equation}
+and its distance from the origin is
+\begin{equation}
+R_{ij} \;=\; \frac{1}{3}\sqrt{\sigma_i^2 + \sigma_j^2 + 2\rho_{ij}\,\sigma_i\sigma_j}.
+\label{eq:gravity}
+\end{equation}
+Equation~\eqref{eq:gravity} is increasing in both volatilities \emph{and} in correlation: the gravity radius is largest precisely when volatilities spike and currencies co-move---the signature of systemic stress. Note the sign flip relative to \eqref{eq:cosines}: whereas the cross-rate volatility falls as correlation rises, the centroid distance rises, which is what endows the aggregate factor with turbulence-like behavior. The portfolio-level factor is the weighted average over all $N(N-1)/2$ pairs,
+\begin{equation}
+GR_t \;=\; \sum_{i<j} w_i w_j R_{ij,t} \Big/ \sum_{i<j} w_i w_j ,
+\label{eq:grindex}
+\end{equation}
+with equal weights in the base case. We estimate $\sigma$ and $\rho$ from rolling 63-day windows of daily log returns of EUR crosses [or 3-month at-the-money implied volatilities where available].
+
+\subsection{Cross-Asset Networks and Topological State Variables}\label{sec:network}
+
+Following \citet{konstantinov2025unsupervised} and \citet{konstantinov2023networks}, we model the cross-asset environment as a sequence of weighted, undirected correlation networks. Nodes comprise global 10-year government yields (DE, US, UK, JP, IT, FR), EUR crosses, and volatility indices (VIX, V2X, MOVE). For each week $t$ we compute the correlation matrix $\Omega_t$ of daily returns over a trailing 126-day window, map it to an adjacency matrix
+\begin{equation}
+a_{ij,t} = |\rho_{ij,t}| \cdot \mathbf{1}\{|\rho_{ij,t}| \ge \bar\rho\}, \qquad a_{ii,t}=0,
+\end{equation}
+with threshold $\bar\rho=0.3$, and extract two state variables. The first is \emph{network density},
+\begin{equation}
+\varsigma_t = \frac{m_t}{n_t(n_t-1)/2},
+\end{equation}
+the share of realized links among possible links---a gauge of system-wide connectedness \citep{konstantinov2025unsupervised}. Random-graph theory gives this statistic a structural interpretation: in the Erd\H{o}s--R\'enyi--Bollob\'as framework, a graph whose mean degree crosses one undergoes a phase transition in which a giant connected component emerges \citep{erdos1960evolution, bollobas2001random}. Applied to a thresholded correlation network, rising density therefore does not merely indicate ``higher average correlation''; it marks the point at which locally correlated clusters merge into a single system-wide risk-transmission component---the topological signature of a regime in which diversification fails and flight-to-quality flows dominate. The second is the Bund node's \emph{eigenvector centrality} $x_{DE,t}$, defined by $\mathbf{A}_t x_t = \lambda_{\max} x_t$, which measures whether German duration currently sits at the core or the periphery of the global risk-transmission network \citep{konstantinov2023networks}.
+
+\subsection{Signals and Portfolio Construction}\label{sec:signals}
+
+[TO BE FINALIZED WITH EMPIRICAL RESULTS]
+The overlay trades the front Bund future weekly. Baseline signals are 13-week yield momentum and curve carry (slope plus rolldown). The geometric and topological state variables enter as (i) standalone directional signals (high $GR_t$ z-scores $\rightarrow$ long duration, the flight-to-quality channel) and (ii) regime conditioners that scale baseline signal weights. Positions are capped at one unit of 10-year duration, executed with a one-week lag, and charged 1\,bp of notional per unit turnover.
+
+\subsection{From Graph Statistics to Graph Learning: A GNN Benchmark}\label{sec:gnn}
+
+Our core signals are deliberately interpretable graph \emph{statistics}. As a benchmark for whether richer topological information is exploitable, we also estimate a graph-learning forecaster in the spirit of the trading graph neural networks discussed by \citet{konstantinov2025unsupervised} and \citet{wu2025trading}: a graph convolutional network \citep{kipf2017semi} applied to each weekly network snapshot, with node features (trailing momentum, carry, and volatility of each asset) propagated over the correlation-weighted adjacency, $\mathbf{Z} = \hat{\mathbf{A}}\mathbf{X}\mathbf{W}$, and a linear head predicting the next-week Bund return. Graph convolution acts here as a topology-aware smoother: each node's features are averaged with those of its network neighbors before entering the forecast, so the Bund forecast inherits information from whichever assets the market currently ties it to. Given the modest sample (roughly one thousand weekly observations), we restrict the architecture to a single convolution with ridge regularization and report it as a benchmark rather than as the headline strategy; temporal extensions such as EvolveGCN \citep{pareja2020evolvegcn} are noted as avenues for richer datasets [results to be reported].
+
+\subsection{Synthetic Futures Returns and Validation}\label{sec:synthetic}
+
+Weekly excess returns of the Bund position are constructed from daily 10-year yields as
+$r_t = -D\,\Delta y_t + (y_{t-1} - r^{f}_{t-1})/52$, with $D=8.5$. Where actual FGBL continuous-contract prices are available, we validate the approximation [correlation and tracking statistics to be reported].
+
+\section{Data}\label{sec:data}
+
+[TO BE COMPLETED: source table---Bloomberg/Refinitiv daily series 2004--2026; Fed H.10 FX; CBOE VIX; sample construction]
+
+\section{Empirical Results}\label{sec:results}
+
+[TO BE COMPLETED AFTER BACKTEST:
+(1) properties of the gravity-radius factor: correlation with VIX/V2X/MOVE, turbulence comparison, event study around stress episodes;
+(2) network states: density and Bund centrality over time, relation to subsequent duration returns (predictive regressions with Newey--West errors);
+(3) overlay performance: signal-by-signal and combined Sharpe ratios, drawdowns, subperiods, transaction-cost sensitivity;
+(4) robustness: window lengths, thresholds, alternative durations, implied vs.\ realized vol.]
+
+\section{Conclusion}\label{sec:conclusion}
+
+[TO BE COMPLETED]
+
+\bibliography{refs}
+
+\end{document}
